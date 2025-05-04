@@ -14,28 +14,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Generate changes with GPT
-        id: gpt
-        uses: openai/openai-action@v1
+      - name: Request GPT response
         env:
-          OPENAI_API_KEY: ${{ secrets.GPT_PUSH_TOKEN }}
-        with:
-          model: 'gpt-4o'
-          prompt: |
-            Ты — помощник по Unity и программированию.
-            Выполни следующую задачу в Unity-проекте:
-            "${{ github.event.inputs.task }}"
-
-            Выдай подробные инструкции или код, который надо вставить в проект, в формате markdown.
-
-      - name: Create file with GPT response
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo "${{ steps.gpt.outputs.response }}" > GPT_Response.md
+          pip install openai
+          python - <<EOF
+          import os
+          from openai import OpenAI
 
-      - name: Commit changes and create PR
+          api_key = os.getenv('OPENAI_API_KEY')
+          task = """${{ github.event.inputs.task }}"""
+
+          client = OpenAI(api_key=api_key)
+
+          response = client.chat.completions.create(
+              model="gpt-4o",
+              messages=[
+                  {"role": "system", "content": "Ты — помощник по Unity и программированию. Тебя попросят внести изменения в проект Unity. Дай подробные инструкции и, при необходимости, код."},
+                  {"role": "user", "content": task}
+              ]
+          )
+
+          answer = response.choices[0].message.content
+          with open("GPT_Response.md", "w", encoding="utf-8") as f:
+              f.write(answer)
+          EOF
+
+      - name: Commit and create PR
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -43,8 +50,8 @@ jobs:
           title: "🤖 GPT Automated changes"
           commit-message: "🛠️ Автоматические изменения от GPT"
           body: |
-            Автоматически созданные изменения:
-            
+            Автоматически созданные изменения с помощью GPT:
+
             - Задача: ${{ github.event.inputs.task }}
 
-            См. инструкцию в файле [GPT_Response.md].
+            Подробнее смотри в [GPT_Response.md].
