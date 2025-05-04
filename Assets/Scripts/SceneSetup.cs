@@ -1,4 +1,3 @@
-[FILE: Assets/Scripts/SceneSetup.cs]
 ```csharp
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
@@ -63,29 +62,3 @@ public class SceneSetup : MonoBehaviour
     }
 }
 ```
-
-[FILE: Assets/SurvivalEngine/Scenes/WorldGenMap_Improved.unity]
-```yaml
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!1 &100000
-GameObject:
-  m_Name: "SceneManager"
-  m_Component:
-  - component: {fileID: [FID_OF_SCENESETUP_SCRIPT]}
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Layer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
-  m_TagString: Untagged
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsStatic: 0
-  m_Components: []
----
-[Additional content based on your existing scene configuration]
-```
-
-Please ensure that you replace `[FID_OF_SCENESETUP_SCRIPT]` with the actual file ID for the attached `SceneSetup` script component. This step requires manual intervention to set the correct reference in Unity's YAML configuration.
