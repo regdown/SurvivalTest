@@ -19,31 +19,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Request GPT response
+      - name: Request GPT and apply file changes
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           pip install openai
+          mkdir -p Assets/Scripts
           python - <<EOF
           import os
-          from openai import OpenAI
+          import re
+          import openai
 
-          api_key = os.getenv('OPENAI_API_KEY')
+          openai.api_key = os.getenv('OPENAI_API_KEY')
           task = """${{ github.event.inputs.task }}"""
 
-          client = OpenAI(api_key=api_key)
+          system_prompt = (
+              "Ты — помощник Unity-разработчика. "
+              "Если задача требует создать или изменить код, возвращай его в формате:\n\n"
+              "[FILE: путь/к/файлу.cs]\n<код файла>\n\n"
+              "Только указывай нужные файлы, без пояснений и описаний. Не добавляй Markdown (например, ```csharp)."
+          )
 
-          response = client.chat.completions.create(
-              model="gpt-4o",
+          response = openai.ChatCompletion.create(
+              model="gpt-3.5-turbo",
               messages=[
-                  {"role": "system", "content": "Ты — помощник по Unity и программированию. Тебя попросят внести изменения в проект Unity. Дай подробные инструкции и, при необходимости, код."},
+                  {"role": "system", "content": system_prompt},
                   {"role": "user", "content": task}
               ]
           )
 
-          answer = response.choices[0].message.content
+          content = response['choices'][0]['message']['content']
+
           with open("GPT_Response.md", "w", encoding="utf-8") as f:
-              f.write(answer)
+              f.write(content)
+
+          # Разбор ответа GPT и запись файлов
+          matches = re.findall(r'\[FILE: (.*?)\]\n(.+?)(?=\n\[FILE: |\Z)', content, flags=re.DOTALL)
+          for filepath, code in matches:
+              full_path = os.path.join(filepath.strip())
+              os.makedirs(os.path.dirname(full_path), exist_ok=True)
+              with open(full_path, "w", encoding="utf-8") as f:
+                  f.write(code.strip())
+
           EOF
 
       - name: Commit and create PR
@@ -51,11 +68,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: auto/openai-changes
-          title: "🤖 GPT Automated changes"
-          commit-message: "🛠️ Автоматические изменения от GPT"
+          title: "🤖 GPT Automated code changes"
+          commit-message: "🛠️ GPT внёс автоматические изменения в Unity-проект"
           body: |
-            Автоматически созданные изменения с помощью GPT:
+            GPT автоматически внёс изменения в следующие файлы:
 
             - Задача: ${{ github.event.inputs.task }}
-
-            Подробнее смотри в [GPT_Response.md].
+            - Подробный ответ: см. файл [GPT_Response.md]
