@@ -11,8 +11,6 @@ on:
 jobs:
   automate-task:
     runs-on: ubuntu-latest
-
-    # ✅ Добавляем права для создания pull request и коммитов
     permissions:
       contents: write
       pull-requests: write
@@ -28,22 +26,22 @@ jobs:
           pip install openai
           python - <<EOF
           import os
-          import openai
+          from openai import OpenAI
 
           api_key = os.getenv('OPENAI_API_KEY')
           task = """${{ github.event.inputs.task }}"""
 
-          openai.api_key = api_key
+          client = OpenAI(api_key=api_key)
 
-          response = openai.ChatCompletion.create(
-              model="gpt-4o",  # ✅ Можно заменить обратно на gpt-4o, если появится доступ
+          response = client.chat.completions.create(
+              model="gpt-4o",
               messages=[
                   {"role": "system", "content": "Ты — помощник по Unity и программированию. Тебя попросят внести изменения в проект Unity. Дай подробные инструкции и, при необходимости, код."},
                   {"role": "user", "content": task}
               ]
           )
 
-          answer = response['choices'][0]['message']['content']
+          answer = response.choices[0].message.content
           with open("GPT_Response.md", "w", encoding="utf-8") as f:
               f.write(answer)
           EOF
