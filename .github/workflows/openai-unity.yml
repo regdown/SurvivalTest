@@ -19,20 +19,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Request GPT and apply file changes
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Write helper script
         run: |
-          pip install openai
-          python3 <<EOF
+          cat > run_gpt.py << 'EOF'
           import os
           import re
           import openai
           import textwrap
 
           openai.api_key = os.getenv("OPENAI_API_KEY")
-
-          task = """${{ github.event.inputs.task }}"""
+          task = os.getenv("GPT_TASK")
 
           system_prompt = textwrap.dedent("""\
               Ты — помощник Unity-разработчика. 
@@ -64,7 +60,15 @@ jobs:
               os.makedirs(os.path.dirname(full_path), exist_ok=True)
               with open(full_path, "w", encoding="utf-8") as f:
                   f.write(code.strip())
-        EOF
+          EOF
+
+      - name: Install dependencies and run GPT
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GPT_TASK: ${{ github.event.inputs.task }}
+        run: |
+          pip install openai
+          python3 run_gpt.py
 
       - name: Commit and create PR
         uses: peter-evans/create-pull-request@v6
