@@ -24,24 +24,28 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           pip install openai
-          mkdir -p Assets/Scripts
-          python - <<EOF
+          python3 <<EOF
           import os
           import re
           import openai
+          import textwrap
 
-          openai.api_key = os.getenv('OPENAI_API_KEY')
+          openai.api_key = os.getenv("OPENAI_API_KEY")
+
           task = """${{ github.event.inputs.task }}"""
 
-          system_prompt = (
-              "Ты — помощник Unity-разработчика. "
-              "Если задача требует создать или изменить код, возвращай его в формате:\n\n"
-              "[FILE: путь/к/файлу.cs]\n<код файла>\n\n"
-              "Только указывай нужные файлы, без пояснений и описаний. Не добавляй Markdown (например, ```csharp)."
-          )
+          system_prompt = textwrap.dedent(\"\"\"\
+              Ты — помощник Unity-разработчика. 
+              Если задача требует создать или изменить код, возвращай его в формате:
+
+              [FILE: путь/к/файлу.cs]
+              <код файла>
+
+              Только указывай нужные файлы, без пояснений и описаний. Не добавляй Markdown, таких как ```csharp.
+          \"\"\")
 
           response = openai.ChatCompletion.create(
-              model="gpt-4o",
+              model="gpt-3.5-turbo",  # заменяй на gpt-4o, если доступен
               messages=[
                   {"role": "system", "content": system_prompt},
                   {"role": "user", "content": task}
@@ -53,15 +57,15 @@ jobs:
           with open("GPT_Response.md", "w", encoding="utf-8") as f:
               f.write(content)
 
-          # Разбор ответа GPT и запись файлов
           matches = re.findall(r'\[FILE: (.*?)\]\n(.+?)(?=\n\[FILE: |\Z)', content, flags=re.DOTALL)
+
           for filepath, code in matches:
-              full_path = os.path.join(filepath.strip())
+              full_path = filepath.strip()
               os.makedirs(os.path.dirname(full_path), exist_ok=True)
               with open(full_path, "w", encoding="utf-8") as f:
                   f.write(code.strip())
-
           EOF
+
 
       - name: Commit and create PR
         uses: peter-evans/create-pull-request@v6
