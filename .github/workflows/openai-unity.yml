@@ -24,10 +24,10 @@ jobs:
           cat > run_gpt.py << 'EOF'
           import os
           import re
-          import openai
           import textwrap
+          from openai import OpenAI
 
-          openai.api_key = os.getenv("OPENAI_API_KEY")
+          client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
           task = os.getenv("GPT_TASK")
 
           system_prompt = textwrap.dedent("""\
@@ -40,7 +40,7 @@ jobs:
               Только указывай нужные файлы, без пояснений и описаний. Не добавляй Markdown, таких как ```csharp.
           """)
 
-          response = openai.ChatCompletion.create(
+          response = client.chat.completions.create(
               model="gpt-4o",
               messages=[
                   {"role": "system", "content": system_prompt},
@@ -48,7 +48,7 @@ jobs:
               ]
           )
 
-          content = response['choices'][0]['message']['content']
+          content = response.choices[0].message.content
 
           with open("GPT_Response.md", "w", encoding="utf-8") as f:
               f.write(content)
@@ -67,7 +67,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GPT_TASK: ${{ github.event.inputs.task }}
         run: |
-          pip install openai
+          pip install --upgrade openai
           python3 run_gpt.py
 
       - name: Commit and create PR
