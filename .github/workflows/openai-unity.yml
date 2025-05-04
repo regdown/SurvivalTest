@@ -1,0 +1,50 @@
+name: OpenAI Unity Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Описание задачи для GPT'
+        required: true
+        type: string
+
+jobs:
+  automate-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generate changes with GPT
+        id: gpt
+        uses: openai/openai-action@v1
+        env:
+          OPENAI_API_KEY: ${{ secrets.GPT_PUSH_TOKEN }}
+        with:
+          model: 'gpt-4o'
+          prompt: |
+            Ты — помощник по Unity и программированию.
+            Выполни следующую задачу в Unity-проекте:
+            "${{ github.event.inputs.task }}"
+
+            Выдай подробные инструкции или код, который надо вставить в проект, в формате markdown.
+
+      - name: Create file with GPT response
+        run: |
+          echo "${{ steps.gpt.outputs.response }}" > GPT_Response.md
+
+      - name: Commit changes and create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto/openai-changes
+          title: "🤖 GPT Automated changes"
+          commit-message: "🛠️ Автоматические изменения от GPT"
+          body: |
+            Автоматически созданные изменения:
+            
+            - Задача: ${{ github.event.inputs.task }}
+
+            См. инструкцию в файле [GPT_Response.md].
