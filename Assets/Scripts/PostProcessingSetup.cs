@@ -1,4 +1,3 @@
-[FILE: Assets/Scripts/PostProcessingSetup.cs]
 ```csharp
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
@@ -64,13 +63,4 @@ public class PostProcessingSetup : MonoBehaviour
         QualitySettings.antiAliasing = 4;
     }
 }
-```
-
-[FILE: Assets/WorldGenMap_Improved.unity]
-```yaml
-// This would be the data from the scene file as it needs the PostProcessingSetup script attached to a GameObject.
-GameObject:
-  - name: PostProcessingController
-    components:
-      - PostProcessingSetup
 ```

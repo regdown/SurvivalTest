@@ -1,0 +1,7 @@
+```yaml
+// This would be the data from the scene file as it needs the PostProcessingSetup script attached to a GameObject.
+GameObject:
+  - name: PostProcessingController
+    components:
+      - PostProcessingSetup
+```
