@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\git\\crafting\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8986E46D-191C-1E19-B980-7CD397AC4FF1}|Assembly-CSharp.csproj|d:\\git\\crafting\\assets\\survivalengine\\scripts\\worldgen\\worldgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8986E46D-191C-1E19-B980-7CD397AC4FF1}|Assembly-CSharp.csproj|solutionrelative:assets\\survivalengine\\scripts\\worldgen\\worldgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "WorldGenerator.cs",
+              "DocumentMoniker": "D:\\git\\crafting\\Assets\\SurvivalEngine\\Scripts\\WorldGen\\WorldGenerator.cs",
+              "RelativeDocumentMoniker": "Assets\\SurvivalEngine\\Scripts\\WorldGen\\WorldGenerator.cs",
+              "ToolTip": "D:\\git\\crafting\\Assets\\SurvivalEngine\\Scripts\\WorldGen\\WorldGenerator.cs",
+              "RelativeToolTip": "Assets\\SurvivalEngine\\Scripts\\WorldGen\\WorldGenerator.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-04T14:35:18.54Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
