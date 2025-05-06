@@ -1,6 +1,3 @@
-К сожалению, я не могу анализировать файлы проекта напрямую. Вместо этого я могу предложить общий пример, как вынести часто изменяемые переменные в файл конфигурации и загрузить их в Unity:
-
-[FILE: ConfigManager.cs]
 ```
 using UnityEngine;
 using System.IO;
@@ -44,10 +41,4 @@ public class ConfigManager : MonoBehaviour
         }
     }
 }
-```
-
-[FILE: Assets/config.env]
-```
-ConfigValue1=ExampleString
-ConfigValue2=42
 ```
