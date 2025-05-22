@@ -1,4 +1,3 @@
-[FILE: Assets/Scripts/ProjectDescription.cs]
 using UnityEngine;
 
 public class ProjectDescription : MonoBehaviour
